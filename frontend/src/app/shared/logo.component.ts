@@ -1,0 +1,8 @@
+import { Component } from '@angular/core';
+
+/** Logo : deux nœuds reliés. */
+@Component({
+  selector: 'app-logo',
+  template: `<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#4f46e5"/><circle cx="10" cy="16" r="4" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="22" cy="16" r="4" fill="#22d3ee"/><path d="M14 16h4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+})
+export class LogoComponent {}
