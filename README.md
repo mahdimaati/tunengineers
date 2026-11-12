@@ -58,6 +58,12 @@ Le mot de passe est haché avec bcrypt ; la session expire après 2 h.
 | `/gestion-admin` → `/tableau` | Connexion puis validation : Approuver / Refuser / Supprimer, consultation du justificatif |
 | `/contact` `/a-propos` `/mentions-legales` `/confidentialite` | Pied de page |
 
+## Données et images
+
+- **49 entreprises** réelles (9 secteurs : Télécoms, Informatique, Industrie, Énergie, Automobile, Aéronautique, Transport, BTP, Chimie) et **57 profils d'ingénieurs fictifs** de démonstration (`SEED_DEMO=0` pour ne pas les créer). Les données sont dans `backend/seed-data.js` ; elles sont ajoutées sans doublons au démarrage.
+- **Logos** : `backend/public/logos/<nom>.svg` — monogrammes originaux générés par `node backend/scripts/generate-assets.js`. Ce ne sont pas les logos officiels : pour utiliser un vrai logo, déposez un fichier du même nom (ex. `vermeg.png`) dans ce dossier ; le serveur préfère automatiquement `png`, `webp` ou `jpg` au `svg`.
+- **Photos de démonstration** : `backend/public/avatars/` (illustrations originales). Les photos téléversées par les vrais inscrits sont stockées à part dans `backend/uploads/photos/`.
+
 ## Sécurité et données (conformément à l'Objectif 2)
 
 - L'API publique ne renvoie que les profils `approuve` et uniquement les champs publics.

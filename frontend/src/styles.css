@@ -171,8 +171,9 @@ main { min-height: 60vh; }
 /* ===== Entreprises ===== */
 .co-card { padding: 16px; display: flex; flex-direction: column; gap: 2px; }
 .co-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.co-logo { width: 40px; height: 40px; border-radius: 8px; background: #eef2ff; display: grid; place-items: center; }
-.co-logo i { width: 14px; height: 14px; border-radius: 50%; background: var(--indigo); }
+.co-logo { width: 48px; height: 48px; border-radius: 12px; overflow: hidden; background: #eef2ff; display: grid; place-items: center; flex: none; }
+.co-logo img { width: 100%; height: 100%; object-fit: contain; }
+.co-mono { font-weight: 700; color: var(--indigo); font-size: 20px; }
 .co-card .name { font-weight: 700; color: var(--navy); }
 .co-card .city { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
 .co-card .btn { margin-top: auto; }

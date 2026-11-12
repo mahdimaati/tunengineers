@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { DatabaseSync } = require('node:sqlite');
+const { COMPANIES, ENGINEERS, slug, strip } = require('./seed-data');
 
 const DATA_DIR = path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -13,7 +14,7 @@ function inTransaction(fn) {
   try { fn(); db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; }
 }
 
-// Deux tables indépendantes : engineers et companies
+// Deux tables indépendantes : engineers et companies (+ une petite table technique pour le suivi des données de départ)
 db.exec(`
 CREATE TABLE IF NOT EXISTS engineers (
   id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,55 +42,45 @@ CREATE TABLE IF NOT EXISTS companies (
   ville    TEXT NOT NULL,
   site_web TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 `);
 
-// ---- Données de départ ----
-const companiesCount = db.prepare('SELECT COUNT(*) AS n FROM companies').get().n;
-if (companiesCount === 0) {
-  const ins = db.prepare('INSERT INTO companies (nom, secteur, ville, site_web) VALUES (?,?,?,?)');
-  const rows = [
-    ['Tunisie Telecom', 'Télécoms', 'Tunis', 'https://www.tunisietelecom.tn'],
-    ['Ooredoo Tunisie', 'Télécoms', 'Tunis', 'https://www.ooredoo.tn'],
-    ['Orange Tunisie', 'Télécoms', 'Tunis', 'https://www.orange.tn'],
-    ['Vermeg', 'Informatique', 'Tunis', 'https://www.vermeg.com'],
-    ['Sofrecom Tunisie', 'Informatique', 'Tunis', 'https://www.sofrecom.com'],
-    ['Telnet Holding', 'Informatique', 'Ariana', 'https://www.telnet.com.tn'],
-    ['Focus Corporation', 'Informatique', 'Tunis', 'https://www.focus.com.tn'],
-    ['Proxym Group', 'Informatique', 'Sousse', 'https://www.proxym-group.com'],
-    ['Sartex', 'Industrie', 'Sfax', 'https://www.sartex.com.tn'],
-    ['Poulina Group Holding', 'Industrie', 'Ben Arous', 'https://www.poulinagh.com'],
-    ['Délice Danone', 'Industrie', 'Ben Arous', 'https://www.delice.tn'],
-    ['STEG', 'Énergie', 'Tunis', 'https://www.steg.com.tn'],
-    ['ETAP', 'Énergie', 'Tunis', 'https://www.etap.com.tn'],
-    ['Star Oil Tunisie', 'Énergie', 'Tunis', 'https://www.staroil.com.tn'],
-    ['Leoni Tunisie', 'Automobile', 'Sousse', 'https://www.leoni.com'],
-    ['Yazaki Tunisie', 'Automobile', 'Bizerte', 'https://www.yazaki-europe.com'],
-    ['Stellantis Tunisie', 'Automobile', 'Ben Arous', 'https://www.stellantis.com'],
-    ['Lear Corporation Tunisie', 'Automobile', 'Bizerte', 'https://www.lear.com'],
-  ];
-  inTransaction(() => rows.forEach((r) => ins.run(...r)));
-}
+// ---- Données de départ (exécutées une seule fois par version, sans doublons) ----
+const SEED_VERSION = '2';
+const done = db.prepare("SELECT value FROM meta WHERE key = 'seed_version'").get();
 
-const engCount = db.prepare('SELECT COUNT(*) AS n FROM engineers').get().n;
-if (engCount === 0 && process.env.SEED_DEMO !== '0') {
-  // Profils de démonstration (fictifs) – supprimez-les en production avec SEED_DEMO=0
-  const ins = db.prepare(`INSERT INTO engineers
-    (nom, domaine, competences, ville, experience, linkedin, email, telephone, consentement, statut)
-    VALUES (?,?,?,?,?,?,?,?,1,?)`);
-  const rows = [
-    ['Amine Mejri', 'Informatique', 'Angular,Node.js,SQL,DevOps', 'Tunis', '3 à 5 ans', 'https://www.linkedin.com/in/amine-mejri-demo', 'amine.mejri@exemple.tn', '+216 20 000 001', 'approuve'],
-    ['Salma Ben Ali', 'Génie civil', 'AutoCAD,Revit,Béton armé', 'Sfax', '3 à 5 ans', 'https://www.linkedin.com/in/salma-benali-demo', 'salma.benali@exemple.tn', '+216 20 000 002', 'approuve'],
-    ['Yassine Trabelsi', 'Électrique', 'SCADA,Automates,Schémas', 'Sousse', '6 à 10 ans', 'https://www.linkedin.com/in/yassine-trabelsi-demo', 'yassine.trabelsi@exemple.tn', '+216 20 000 003', 'approuve'],
-    ['Nour Haddad', 'Télécoms', '5G,Réseaux,Python', 'Tunis', '1 à 2 ans', 'https://www.linkedin.com/in/nour-haddad-demo', 'nour.haddad@exemple.tn', '+216 20 000 004', 'approuve'],
-    ['Lina Mansour', 'Industriel', 'Lean,Six Sigma,Supply chain', 'Bizerte', '3 à 5 ans', 'https://www.linkedin.com/in/lina-mansour-demo', 'lina.mansour@exemple.tn', '+216 20 000 005', 'approuve'],
-    ['Rami Gharbi', 'Énergie', 'Solaire,Efficacité énergétique', 'Gabès', '6 à 10 ans', 'https://www.linkedin.com/in/rami-gharbi-demo', 'rami.gharbi@exemple.tn', '+216 20 000 006', 'approuve'],
-    ['Oussama Zied', 'Chimie', 'Procédés,Qualité,HSE', 'Monastir', '6 à 10 ans', 'https://www.linkedin.com/in/oussama-zied-demo', 'oussama.zied@exemple.tn', '+216 20 000 007', 'approuve'],
-    ['Mariem Chaabane', 'Mécanique', 'SolidWorks,CAO,Fabrication', 'Nabeul', '1 à 2 ans', 'https://www.linkedin.com/in/mariem-chaabane-demo', 'mariem.chaabane@exemple.tn', '+216 20 000 008', 'approuve'],
-    ['Karim Jlassi', 'Informatique', 'Python,Machine Learning,Docker', 'Ariana', '3 à 5 ans', 'https://www.linkedin.com/in/karim-jlassi-demo', 'karim.jlassi@exemple.tn', '+216 20 000 009', 'en_attente'],
-    ['Hajer Bouzid', 'Génie civil', 'Topographie,Route,Structures', 'Kairouan', '1 à 2 ans', 'https://www.linkedin.com/in/hajer-bouzid-demo', 'hajer.bouzid@exemple.tn', '+216 20 000 010', 'en_attente'],
-    ['Walid Sassi', 'Électrique', 'Électronique,Embarqué,C', 'Tunis', '3 à 5 ans', 'https://www.linkedin.com/in/walid-sassi-demo', 'walid.sassi@exemple.tn', '+216 20 000 011', 'refuse'],
-  ];
-  inTransaction(() => rows.forEach((r) => ins.run(...r)));
+if (!done || done.value !== SEED_VERSION) {
+  inTransaction(() => {
+    // Entreprises : ajoutées si le nom n'existe pas encore (les données existantes ne sont pas touchées)
+    const hasCo = db.prepare('SELECT 1 FROM companies WHERE nom = ?');
+    const insCo = db.prepare('INSERT INTO companies (nom, secteur, ville, site_web) VALUES (?,?,?,?)');
+    for (const c of COMPANIES) if (!hasCo.get(c[0])) insCo.run(...c);
+
+    // Profils de démonstration (fictifs) – désactivables avec SEED_DEMO=0
+    if (process.env.SEED_DEMO !== '0') {
+      const byEmail = db.prepare('SELECT id, photo FROM engineers WHERE email = ?');
+      const insEng = db.prepare(`INSERT INTO engineers
+        (nom, photo, domaine, competences, ville, experience, linkedin, email, telephone, consentement, statut)
+        VALUES (?,?,?,?,?,?,?,?,?,1,?)`);
+      const setPhoto = db.prepare('UPDATE engineers SET photo = ? WHERE id = ?');
+
+      ENGINEERS.forEach(([nom, , domaine, competences, ville, experience, statut], i) => {
+        const parts = strip(nom).toLowerCase().split(/\s+/);
+        const email = `${parts[0]}.${parts.slice(1).join('')}@exemple.tn`;
+        const photo = `/avatars/${slug(nom)}.svg`;
+        const existing = byEmail.get(email);
+        if (existing) {
+          if (!existing.photo) setPhoto.run(photo, existing.id); // ajoute l'image aux anciens profils démo
+          return;
+        }
+        const tel = `+216 2${i % 10} ${String(100 + i * 7).padStart(3, '0')} ${String(200 + i * 13).padStart(3, '0')}`;
+        insEng.run(nom, photo, domaine, competences, ville, experience,
+          `https://www.linkedin.com/in/${slug(nom)}-demo`, email, tel, statut);
+      });
+    }
+    db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES ('seed_version', ?)").run(SEED_VERSION);
+  });
 }
 
 module.exports = db;

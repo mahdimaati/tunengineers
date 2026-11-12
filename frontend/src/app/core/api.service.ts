@@ -22,7 +22,7 @@ export interface AdminEngineer extends Engineer {
   diplome: string | null;
 }
 
-export interface Company { id: number; nom: string; secteur: string; ville: string; site_web: string; }
+export interface Company { id: number; nom: string; secteur: string; ville: string; site_web: string; logo: string | null; }
 export interface Stats { ingenieurs: number; domaines: number; entreprises: number; }
 export interface Meta { domaines: string[]; experiences: string[]; }
 export interface Counts { en_attente: number; approuve: number; refuse: number; }

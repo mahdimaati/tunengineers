@@ -86,7 +86,20 @@ const limiterContact = rateLimit({ windowMs: 15 * 60 * 1000, limit: 60, standard
 const limiterRegister = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false, message: { error: "Trop d'inscriptions depuis cette adresse. Réessayez plus tard." } });
 
 // ---------- Helpers ----------
-const publicPhoto = (p) => (p ? `/uploads/photos/${p}` : null);
+// Photo : fichier téléversé (nom seul) ou avatar de démonstration (chemin commençant par « / »)
+const publicPhoto = (p) => (p ? (p.startsWith('/') ? p : `/uploads/photos/${p}`) : null);
+
+// Logos : public/logos/<nom-slug>.(png|webp|jpg|jpeg|svg) – un vrai logo déposé remplace le monogramme généré
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const LOGO_DIR = path.join(PUBLIC_DIR, 'logos');
+const LOGO_EXT = ['png', 'webp', 'jpg', 'jpeg', 'svg'];
+const slugify = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+function logoFor(nom) {
+  const base = slugify(nom);
+  const ext = LOGO_EXT.find((e) => fs.existsSync(path.join(LOGO_DIR, `${base}.${e}`)));
+  return ext ? `/logos/${base}.${ext}` : null;
+}
+const withLogo = (c) => ({ ...c, logo: logoFor(c.nom) });
 
 /** Seuls les champs publics sont exposés (jamais email, téléphone, diplôme). */
 function toPublic(r) {
@@ -175,7 +188,7 @@ app.get('/api/companies', (req, res) => {
   const rows = secteur
     ? db.prepare('SELECT * FROM companies WHERE secteur = ? ORDER BY nom').all(secteur)
     : db.prepare('SELECT * FROM companies ORDER BY nom').all();
-  res.json(rows);
+  res.json(rows.map(withLogo));
 });
 
 app.get('/api/companies/secteurs', (req, res) => {
@@ -309,13 +322,15 @@ app.delete('/api/admin/engineers/:id', requireAdmin, (req, res) => {
   const r = db.prepare('SELECT photo, diplome_preuve FROM engineers WHERE id = ?').get(id);
   if (!r) return res.status(404).json({ error: 'Profil introuvable.' });
   db.prepare('DELETE FROM engineers WHERE id = ?').run(id);
-  if (r.photo) fs.unlink(path.join(PHOTO_DIR, path.basename(r.photo)), () => {});
+  if (r.photo && !r.photo.startsWith('/')) fs.unlink(path.join(PHOTO_DIR, path.basename(r.photo)), () => {});
   if (r.diplome_preuve) fs.unlink(path.join(PRIVATE_DIR, path.basename(r.diplome_preuve)), () => {});
   res.json({ ok: true });
 });
 
 // ---------- Fichiers publics : photos uniquement ----------
 app.use('/uploads/photos', express.static(PHOTO_DIR, { maxAge: '7d', index: false, dotfiles: 'deny' }));
+app.use('/logos', express.static(LOGO_DIR, { maxAge: '1d', index: false, dotfiles: 'deny' }));
+app.use('/avatars', express.static(path.join(PUBLIC_DIR, 'avatars'), { maxAge: '7d', index: false, dotfiles: 'deny' }));
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Route inconnue.' }));
 
@@ -323,7 +338,7 @@ app.use('/api', (req, res) => res.status(404).json({ error: 'Route inconnue.' })
 const DIST = path.join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser');
 if (fs.existsSync(DIST)) {
   app.use(express.static(DIST, { index: false }));
-  app.get(/^\/(?!api|uploads).*/, (req, res) => res.sendFile(path.join(DIST, 'index.html')));
+  app.get(/^\/(?!api|uploads|logos|avatars).*/, (req, res) => res.sendFile(path.join(DIST, 'index.html')));
 }
 
 // ---------- Gestion d'erreurs ----------
