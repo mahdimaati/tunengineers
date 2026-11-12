@@ -23,7 +23,9 @@ import { ApiService, Company } from '../core/api.service';
           @for (c of companies(); track c.id) {
             <article class="card co-card">
               <div class="co-top">
-                <span class="co-logo" aria-hidden="true"><i></i></span>
+                <span class="co-logo" aria-hidden="true">
+                  @if (c.logo) { <img [src]="c.logo" alt="" width="48" height="48" loading="lazy" /> } @else { <span class="co-mono">{{ c.nom.charAt(0) }}</span> }
+                </span>
                 <span class="tag" style="margin:0">{{ c.secteur }}</span>
               </div>
               <h2 class="name" style="font-size:16px">{{ c.nom }}</h2>
