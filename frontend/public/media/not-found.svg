@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Illustration : page introuvable">
+<style>.s{animation:sw 3s ease-in-out infinite;transform-origin:160px 60px}@keyframes sw{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@media (prefers-reduced-motion:reduce){.s{animation:none}}</style>
+<rect width="320" height="200" rx="16" fill="#eef2ff"/>
+<text x="160" y="140" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="92" fill="#4f46e5">404</text>
+<g class="s"><path d="M160 20v34" stroke="#0b1437" stroke-width="3"/><circle cx="160" cy="68" r="14" fill="#22d3ee"/><path d="M154 68h12" stroke="#0b1437" stroke-width="3" stroke-linecap="round"/></g>
+<rect x="60" y="160" width="200" height="8" rx="4" fill="#c7d2fe"/>
+</svg>

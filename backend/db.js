@@ -43,6 +43,16 @@ CREATE TABLE IF NOT EXISTS companies (
   site_web TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS messages (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  date    TEXT    NOT NULL DEFAULT (datetime('now')),
+  nom     TEXT    NOT NULL,
+  email   TEXT    NOT NULL,
+  sujet   TEXT    NOT NULL,
+  message TEXT    NOT NULL,
+  lu      INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 `);
 

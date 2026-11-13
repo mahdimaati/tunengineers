@@ -25,7 +25,9 @@ export interface AdminEngineer extends Engineer {
 export interface Company { id: number; nom: string; secteur: string; ville: string; site_web: string; logo: string | null; }
 export interface Stats { ingenieurs: number; domaines: number; entreprises: number; }
 export interface Meta { domaines: string[]; experiences: string[]; }
-export interface Counts { en_attente: number; approuve: number; refuse: number; }
+export interface Counts { en_attente: number; approuve: number; refuse: number; messages_non_lus: number; }
+export interface Message { id: number; date: string; nom: string; email: string; sujet: string; message: string; lu: boolean; }
+export interface ContactPayload { nom: string; email: string; sujet: string; message: string; site: string; }
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -50,6 +52,9 @@ export class ApiService {
   }
   secteurs() { return this.http.get<string[]>('/api/companies/secteurs'); }
 
+  sujets() { return this.http.get<string[]>('/api/contact/sujets'); }
+  sendContact(p: ContactPayload) { return this.http.post<{ ok: boolean; message?: string }>('/api/contact', p); }
+
   register(form: FormData) { return this.http.post<{ ok: boolean; message: string }>('/api/register', form); }
 
   // Admin
@@ -58,6 +63,9 @@ export class ApiService {
   adminLogout() { return this.http.post<{ ok: boolean }>('/api/admin/logout', {}); }
   adminList(statut: string) { return this.http.get<AdminEngineer[]>('/api/admin/engineers', { params: { statut } }); }
   adminCounts() { return this.http.get<Counts>('/api/admin/counts'); }
+  adminMessages() { return this.http.get<Message[]>('/api/admin/messages'); }
+  adminMessageRead(id: number) { return this.http.post(`/api/admin/messages/${id}/read`, {}); }
+  adminMessageDelete(id: number) { return this.http.delete(`/api/admin/messages/${id}`); }
   adminApprove(id: number) { return this.http.post(`/api/admin/engineers/${id}/approve`, {}); }
   adminReject(id: number) { return this.http.post(`/api/admin/engineers/${id}/reject`, {}); }
   adminDelete(id: number) { return this.http.delete(`/api/admin/engineers/${id}`); }
