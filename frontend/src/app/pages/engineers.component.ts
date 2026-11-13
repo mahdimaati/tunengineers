@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, OnInit, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, debounceTime, switchMap, catchError, of } from 'rxjs';
@@ -6,16 +6,35 @@ import { ApiService, Engineer } from '../core/api.service';
 import { AvatarComponent } from '../shared/avatar.component';
 import { EngineerCardComponent } from '../shared/engineer-card.component';
 import { VerifiedBadgeComponent } from '../shared/verified-badge.component';
+import { IconComponent } from '../shared/icon.component';
 
 @Component({
   selector: 'app-engineers',
-  imports: [AvatarComponent, EngineerCardComponent, VerifiedBadgeComponent],
+  imports: [AvatarComponent, EngineerCardComponent, VerifiedBadgeComponent, IconComponent],
   host: { '(document:keydown.escape)': 'close()' },
   template: `
+    <header class="banner">
+      <div class="container banner-in">
+        <div>
+          <h1>Annuaire des ingénieurs</h1>
+          <p>Des profils validés manuellement : diplôme et LinkedIn contrôlés. Filtrez par domaine, ville ou compétence.</p>
+        </div>
+        <img src="media/hero.svg" alt="" width="300" height="254" />
+      </div>
+    </header>
+
     <div class="container page">
-      <div class="page-head">
-        <h1>Annuaire des ingénieurs</h1>
+      <div class="toolbar">
         <span class="count" aria-live="polite">{{ list().length }} profil{{ list().length > 1 ? 's' : '' }} vérifié{{ list().length > 1 ? 's' : '' }}</span>
+        <div class="toolbar-right">
+          @if (hasFilters()) { <button type="button" class="link-btn" (click)="reset()"><app-icon name="x" [size]="14" /> Réinitialiser les filtres</button> }
+          <label class="sr-only" for="tri">Trier par</label>
+          <select id="tri" class="field sort" [value]="tri()" (change)="tri.set($any($event.target).value)">
+            <option value="recent">Plus récents</option>
+            <option value="nom">Nom (A → Z)</option>
+            <option value="experience">Expérience</option>
+          </select>
+        </div>
       </div>
 
       <form class="filters" role="search" (submit)="$event.preventDefault()">
@@ -49,12 +68,12 @@ import { VerifiedBadgeComponent } from '../shared/verified-badge.component';
       @if (error()) {
         <p class="error-box" role="alert">Impossible de charger l'annuaire. Réessayez dans un instant.</p>
       } @else if (loading()) {
-        <p class="empty" role="status">Chargement…</p>
+        <div class="grid" aria-hidden="true">@for (n of [1,2,3,4,5,6,7,8]; track n) { <div class="card skeleton sk-card"></div> }</div>
       } @else if (list().length === 0) {
-        <p class="empty">Aucun profil ne correspond à votre recherche.</p>
+        <div class="empty"><p>Aucun profil ne correspond à votre recherche.</p><button type="button" class="btn btn-secondary" style="margin-top:14px" (click)="reset()">Réinitialiser les filtres</button></div>
       } @else {
         <div class="grid">
-          @for (e of list(); track e.id) {
+          @for (e of sorted(); track e.id) {
             <app-engineer-card [eng]="e" (open)="open($event)" />
           }
         </div>
@@ -123,6 +142,15 @@ export class EngineersComponent implements OnInit {
   q = signal('');
   domaine = signal('');
   ville = signal('');
+  tri = signal<'recent' | 'nom' | 'experience'>('recent');
+  hasFilters = computed(() => !!(this.q() || this.domaine() || this.ville()));
+  private niveau: Record<string, number> = { 'Jeune diplômé': 0, '1 à 2 ans': 1, '3 à 5 ans': 2, '6 à 10 ans': 3, 'Plus de 10 ans': 4 };
+  sorted = computed(() => {
+    const l = [...this.list()];
+    if (this.tri() === 'nom') l.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+    else if (this.tri() === 'experience') l.sort((a, b) => (this.niveau[b.experience] ?? 0) - (this.niveau[a.experience] ?? 0) || a.nom.localeCompare(b.nom, 'fr'));
+    return l;
+  });
 
   selected = signal<Engineer | null>(null);
   contactInfo = signal<{ email: string; telephone: string | null } | null>(null);
@@ -141,10 +169,17 @@ export class EngineersComponent implements OnInit {
     this.api.meta().subscribe({ next: (m) => this.domaines.set(m.domaines) });
     this.api.villes().subscribe({ next: (v) => this.villes.set(v) });
 
+    const qp = this.route.snapshot.queryParamMap;
+    this.q.set(qp.get('q') ?? '');
+    this.domaine.set(qp.get('domaine') ?? '');
+    this.ville.set(qp.get('ville') ?? '');
+
     this.search$.pipe(
       debounceTime(200),
       switchMap(() => {
         this.loading.set(true);
+        this.router.navigate([], { relativeTo: this.route, replaceUrl: true, queryParamsHandling: 'merge',
+          queryParams: { q: this.q() || null, domaine: this.domaine() || null, ville: this.ville() || null } });
         return this.api.engineers({ q: this.q(), domaine: this.domaine(), ville: this.ville() }).pipe(
           catchError(() => { this.error.set(true); return of([] as Engineer[]); }),
         );
@@ -165,12 +200,13 @@ export class EngineersComponent implements OnInit {
     });
   }
 
+  reset() { this.q.set(''); this.domaine.set(''); this.ville.set(''); this.search$.next(); }
   onSearch(v: string) { this.q.set(v); this.search$.next(); }
   setDomaine(v: string) { this.domaine.set(v); this.search$.next(); }
   setVille(v: string) { this.ville.set(v); this.search$.next(); }
 
-  open(e: Engineer) { this.router.navigate(['/ingenieurs', e.id]); }
-  close() { if (this.selected()) this.router.navigate(['/ingenieurs']); }
+  open(e: Engineer) { this.router.navigate(['/ingenieurs', e.id], { queryParamsHandling: 'preserve' }); }
+  close() { if (this.selected()) this.router.navigate(['/ingenieurs'], { queryParamsHandling: 'preserve' }); }
 
   contact(e: Engineer) {
     this.contactLoading.set(true);

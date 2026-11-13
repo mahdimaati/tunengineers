@@ -1,11 +1,31 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ApiService, Company } from '../core/api.service';
+import { IconComponent } from '../shared/icon.component';
+import { RevealDirective } from '../shared/motion.directives';
 
 @Component({
   selector: 'app-companies',
+  imports: [IconComponent, RevealDirective],
   template: `
+    <header class="banner">
+      <div class="container banner-in">
+        <div>
+          <h1>Entreprises qui recrutent des ingénieurs</h1>
+          <p>{{ companies().length }} entreprises référencées dans {{ secteurs().length }} secteurs d'activité. Accédez directement à leur site officiel.</p>
+        </div>
+        <img src="media/companies.svg" alt="" width="300" height="200" />
+      </div>
+    </header>
+
     <div class="container page">
-      <div class="page-head"><h1>Entreprises qui recrutent des ingénieurs</h1></div>
+      <div class="toolbar">
+        <div class="search-box">
+          <app-icon name="search" [size]="18" />
+          <label class="sr-only" for="cq">Rechercher une entreprise</label>
+          <input id="cq" class="field" type="search" placeholder="Rechercher une entreprise ou une ville…" [value]="q()" (input)="q.set($any($event.target).value)" />
+        </div>
+        <span class="count" aria-live="polite">{{ shown().length }} résultat{{ shown().length > 1 ? 's' : '' }}</span>
+      </div>
 
       <div class="chips" role="group" aria-label="Filtrer par secteur">
         <button type="button" class="chip" [attr.aria-pressed]="secteur() === ''" (click)="select('')">Tous</button>
@@ -17,11 +37,13 @@ import { ApiService, Company } from '../core/api.service';
       @if (error()) {
         <p class="error-box" role="alert">Impossible de charger les entreprises.</p>
       } @else if (loading()) {
-        <p class="empty" role="status">Chargement…</p>
+        <div class="grid three" aria-hidden="true">@for (n of [1,2,3,4,5,6]; track n) { <div class="card skeleton sk-co"></div> }</div>
+      } @else if (shown().length === 0) {
+        <p class="empty">Aucune entreprise ne correspond à votre recherche.</p>
       } @else {
         <div class="grid three">
-          @for (c of companies(); track c.id) {
-            <article class="card co-card">
+          @for (c of shown(); track c.id; let i = $index) {
+            <article class="card co-card" [appReveal]="(i % 3) * 60">
               <div class="co-top">
                 <span class="co-logo" aria-hidden="true">
                   @if (c.logo) { <img [src]="c.logo" alt="" width="48" height="48" loading="lazy" /> } @else { <span class="co-mono">{{ c.nom.charAt(0) }}</span> }
@@ -29,8 +51,8 @@ import { ApiService, Company } from '../core/api.service';
                 <span class="tag" style="margin:0">{{ c.secteur }}</span>
               </div>
               <h2 class="name" style="font-size:16px">{{ c.nom }}</h2>
-              <p class="city">{{ c.ville }}</p>
-              <a class="btn btn-block" [href]="c.site_web" target="_blank" rel="noopener noreferrer">Site officiel<span class="sr-only"> de {{ c.nom }} (nouvel onglet)</span></a>
+              <p class="city"><app-icon name="pin" [size]="14" /> {{ c.ville }}</p>
+              <a class="btn btn-block" [href]="c.site_web" target="_blank" rel="noopener noreferrer">Site officiel <app-icon name="arrow-right" [size]="15" /><span class="sr-only"> de {{ c.nom }} (nouvel onglet)</span></a>
             </article>
           }
         </div>
@@ -43,8 +65,14 @@ export class CompaniesComponent implements OnInit {
   secteurs = signal<string[]>([]);
   companies = signal<Company[]>([]);
   secteur = signal('');
+  q = signal('');
   loading = signal(true);
   error = signal(false);
+
+  shown = computed(() => {
+    const t = this.q().trim().toLowerCase();
+    return t ? this.companies().filter((c) => (c.nom + ' ' + c.ville + ' ' + c.secteur).toLowerCase().includes(t)) : this.companies();
+  });
 
   ngOnInit() {
     this.api.secteurs().subscribe({ next: (s) => this.secteurs.set(s) });

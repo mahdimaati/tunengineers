@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
+import { IconComponent } from '../shared/icon.component';
+import { ToastService } from '../shared/toast.component';
 
 const VILLES = ['Tunis', 'Ariana', 'Ben Arous', 'Manouba', 'Nabeul', 'Zaghouan', 'Bizerte', 'Béja', 'Jendouba', 'Le Kef', 'Siliana', 'Sousse', 'Monastir', 'Mahdia', 'Kairouan', 'Kasserine', 'Sidi Bouzid', 'Sfax', 'Gabès', 'Médenine', 'Tataouine', 'Gafsa', 'Tozeur', 'Kébili'];
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -10,8 +12,18 @@ const MAX = 5 * 1024 * 1024;
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, IconComponent],
   template: `
+    <header class="banner">
+      <div class="container banner-in">
+        <div>
+          <h1>Rejoindre la communauté</h1>
+          <p>Créez votre profil d'ingénieur en une page. Il sera publié après vérification de votre diplôme et de votre LinkedIn.</p>
+        </div>
+        <img src="media/register.svg" alt="" width="260" height="195" />
+      </div>
+    </header>
+
     <div class="container page">
       @if (done()) {
         <section class="card success-card" role="status">
@@ -21,8 +33,9 @@ const MAX = 5 * 1024 * 1024;
           <a class="btn" routerLink="/">Retour à l'accueil</a>
         </section>
       } @else {
+        <div class="register-layout">
         <section class="card form-card" aria-labelledby="titre">
-          <h1 id="titre">Rejoindre la communauté</h1>
+          <h2 id="titre">Vos informations</h2>
           <p class="note" style="font-size:14px;margin-top:4px">Un administrateur vérifie chaque profil avant publication.</p>
 
           <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
@@ -82,6 +95,7 @@ const MAX = 5 * 1024 * 1024;
                 <span class="lbl" id="lbl-photo">Photo</span>
                 <label class="upload">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16"/></svg>
+                  @if (photoUrl()) { <img class="thumb" [src]="photoUrl()" alt="Aperçu de la photo choisie" /> }
                   <span>{{ photo()?.name || 'Téléverser une photo' }}</span>
                   <input type="file" accept="image/jpeg,image/png,image/webp" aria-labelledby="lbl-photo" (change)="onFile($event, 'photo')" />
                 </label>
@@ -115,6 +129,21 @@ const MAX = 5 * 1024 * 1024;
             </div>
           </form>
         </section>
+
+        <aside class="side-card" aria-label="Pourquoi s'inscrire">
+          <h2>Pourquoi s'inscrire ?</h2>
+          <ul>
+            <li><app-icon name="shield" [size]="20" /><span><b>Un badge « Vérifié »</b> pour rassurer les recruteurs.</span></li>
+            <li><app-icon name="eye-off" [size]="20" /><span><b>Contact protégé</b> : email et téléphone masqués jusqu'au clic.</span></li>
+            <li><app-icon name="lock" [size]="20" /><span><b>Diplôme confidentiel</b>, visible de l'administrateur seul.</span></li>
+            <li><app-icon name="gift" [size]="20" /><span><b>Gratuit</b>, suppression sur simple demande.</span></li>
+          </ul>
+          <div class="side-steps">
+            <p><b>Et ensuite ?</b></p>
+            <ol><li>Vous envoyez le formulaire</li><li>L'administrateur vérifie vos documents</li><li>Votre profil est publié</li></ol>
+          </div>
+        </aside>
+        </div>
       }
     </div>
   `,
@@ -133,6 +162,8 @@ export class RegisterComponent implements OnInit {
   globalError = signal('');
   sending = signal(false);
   done = signal(false);
+  photoUrl = signal('');
+  private toast = inject(ToastService);
   submitted = signal(false);
 
   form = this.fb.nonNullable.group({
@@ -190,7 +221,13 @@ export class RegisterComponent implements OnInit {
     this.fileErr.set(errs);
   }
 
-  private setFile(kind: 'photo' | 'diplome', f: File | null) { (kind === 'photo' ? this.photo : this.diplome).set(f); }
+  private setFile(kind: 'photo' | 'diplome', f: File | null) {
+    (kind === 'photo' ? this.photo : this.diplome).set(f);
+    if (kind === 'photo') {
+      if (this.photoUrl()) URL.revokeObjectURL(this.photoUrl());
+      this.photoUrl.set(f ? URL.createObjectURL(f) : '');
+    }
+  }
 
   submit() {
     this.submitted.set(true);
@@ -215,9 +252,10 @@ export class RegisterComponent implements OnInit {
 
     this.sending.set(true);
     this.api.register(fd).subscribe({
-      next: () => { this.sending.set(false); this.done.set(true); },
+      next: () => { this.sending.set(false); this.done.set(true); this.toast.ok('Demande envoyée : profil en attente de vérification.'); window.scrollTo({ top: 0 }); },
       error: (e) => {
         this.sending.set(false);
+        this.toast.error("L'inscription n'a pas pu être envoyée. Vérifiez les champs signalés.");
         const body = e.error?.errors ?? null;
         if (body) {
           const { photo, diplome, fichier, ...rest } = body as Record<string, string>;

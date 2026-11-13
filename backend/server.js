@@ -85,6 +85,8 @@ const limiterLogin = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHe
 const limiterContact = rateLimit({ windowMs: 15 * 60 * 1000, limit: 60, standardHeaders: true, legacyHeaders: false, message: { error: 'Trop de demandes. Réessayez plus tard.' } });
 const limiterRegister = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false, message: { error: "Trop d'inscriptions depuis cette adresse. Réessayez plus tard." } });
 
+const limiterMessage = rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false, message: { errors: { message: 'Trop de messages envoyés. Réessayez plus tard.' } } });
+
 // ---------- Helpers ----------
 // Photo : fichier téléversé (nom seul) ou avatar de démonstration (chemin commençant par « / »)
 const publicPhoto = (p) => (p ? (p.startsWith('/') ? p : `/uploads/photos/${p}`) : null);
@@ -195,6 +197,24 @@ app.get('/api/companies/secteurs', (req, res) => {
   res.json(db.prepare('SELECT DISTINCT secteur FROM companies ORDER BY secteur').all().map((r) => r.secteur));
 });
 
+// ---------- Formulaire de contact ----------
+const SUJETS = ['Question générale', 'Suppression de mon profil', 'Correction de mes données', 'Partenariat entreprise', 'Autre'];
+app.get('/api/contact/sujets', (req, res) => res.json(SUJETS));
+
+app.post('/api/contact', limiterMessage, (req, res) => {
+  const b = req.body || {};
+  if (clean(b.site, 50)) return res.status(201).json({ ok: true }); // champ piège anti-robot : on fait semblant
+  const d = { nom: clean(b.nom, 80), email: clean(b.email, 120).toLowerCase(), sujet: clean(b.sujet, 60), message: String(b.message ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim().slice(0, 2000) };
+  const errors = {};
+  if (d.nom.length < 2) errors.nom = 'Nom requis (2 caractères minimum).';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) errors.email = 'Adresse email invalide.';
+  if (!SUJETS.includes(d.sujet)) errors.sujet = 'Choisissez un sujet.';
+  if (d.message.length < 10) errors.message = 'Message trop court (10 caractères minimum).';
+  if (Object.keys(errors).length) return res.status(400).json({ errors });
+  db.prepare('INSERT INTO messages (nom, email, sujet, message) VALUES (?,?,?,?)').run(d.nom, d.email, d.sujet, d.message);
+  res.status(201).json({ ok: true, message: 'Message envoyé. Nous vous répondrons dès que possible.' });
+});
+
 // ---------- Inscription ----------
 app.post('/api/register', limiterRegister, (req, res) => {
   upload(req, res, (err) => {
@@ -295,6 +315,7 @@ app.get('/api/admin/engineers', requireAdmin, (req, res) => {
 app.get('/api/admin/counts', requireAdmin, (req, res) => {
   const out = { en_attente: 0, approuve: 0, refuse: 0 };
   db.prepare('SELECT statut, COUNT(*) AS n FROM engineers GROUP BY statut').all().forEach((r) => { out[r.statut] = r.n; });
+  out.messages_non_lus = db.prepare('SELECT COUNT(*) AS n FROM messages WHERE lu = 0').get().n;
   res.json(out);
 });
 
@@ -315,6 +336,19 @@ function setStatut(statut) {
 }
 app.post('/api/admin/engineers/:id/approve', requireAdmin, setStatut('approuve'));
 app.post('/api/admin/engineers/:id/reject', requireAdmin, setStatut('refuse'));
+
+app.get('/api/admin/messages', requireAdmin, (req, res) => {
+  res.json(db.prepare('SELECT id, date, nom, email, sujet, message, lu FROM messages ORDER BY id DESC LIMIT 200').all().map((m) => ({ ...m, lu: !!m.lu })));
+});
+app.post('/api/admin/messages/:id/read', requireAdmin, (req, res) => {
+  db.prepare('UPDATE messages SET lu = 1 WHERE id = ?').run(Number(req.params.id));
+  res.json({ ok: true });
+});
+app.delete('/api/admin/messages/:id', requireAdmin, (req, res) => {
+  const info = db.prepare('DELETE FROM messages WHERE id = ?').run(Number(req.params.id));
+  if (!info.changes) return res.status(404).json({ error: 'Message introuvable.' });
+  res.json({ ok: true });
+});
 
 // Suppression d'un profil sur simple demande
 app.delete('/api/admin/engineers/:id', requireAdmin, (req, res) => {

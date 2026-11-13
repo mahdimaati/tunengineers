@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 440" role="img" aria-label="Illustration : un profil d'ingénieur vérifié relié à plusieurs domaines d'ingénierie">
+<style>
+  .fl{animation:fl 5s ease-in-out infinite}.fl2{animation:fl 6.5s ease-in-out infinite -2s}.fl3{animation:fl 5.5s ease-in-out infinite -3.5s}
+  @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .dash{stroke-dasharray:5 7;animation:dash 14s linear infinite}@keyframes dash{to{stroke-dashoffset:-120}}
+  @media (prefers-reduced-motion:reduce){.fl,.fl2,.fl3,.dash{animation:none}}
+  .ic{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+  <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+  <radialGradient id="g2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#6366f1" stop-opacity=".55"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/></radialGradient>
+</defs>
+<circle cx="260" cy="220" r="210" fill="url(#g2)"/>
+<circle cx="260" cy="220" r="170" fill="none" stroke="#a5b4fc" stroke-opacity=".35" class="dash"/>
+<circle cx="260" cy="220" r="120" fill="none" stroke="#a5b4fc" stroke-opacity=".25" class="dash"/>
+
+<!-- lignes de liaison -->
+<g stroke="#a5b4fc" stroke-opacity=".6" stroke-width="1.5" stroke-dasharray="4 5" fill="none">
+  <path d="M170 140 78 76"/><path d="M350 140 446 70"/><path d="M160 290 70 360"/><path d="M360 290 452 352"/><path d="M260 330 260 400"/>
+</g>
+
+<!-- carte profil -->
+<g class="fl2">
+  <rect x="140" y="110" width="240" height="230" rx="20" fill="#fff"/>
+  <rect x="140" y="110" width="240" height="64" rx="20" fill="url(#g1)"/>
+  <rect x="140" y="150" width="240" height="24" fill="url(#g1)"/>
+  <circle cx="260" cy="176" r="38" fill="#fff"/>
+  <circle cx="260" cy="176" r="33" fill="#c7d2fe"/>
+  <ellipse cx="260" cy="170" rx="13" ry="14" fill="#e8b98a"/>
+  <path d="M247 166c-1-14 27-14 26 0-4-6-20-6-26 0Z" fill="#1f2937"/>
+  <path d="M232 205c2-15 15-20 28-20s26 5 28 20c-8 6-17 8-28 8s-20-2-28-8Z" fill="#4f46e5"/>
+  <rect x="205" y="228" width="110" height="12" rx="6" fill="#0b1437"/>
+  <rect x="222" y="248" width="76" height="8" rx="4" fill="#cbd5e1"/>
+  <rect x="168" y="274" width="58" height="20" rx="10" fill="#e0e7ff"/><rect x="232" y="274" width="48" height="20" rx="10" fill="#e0e7ff"/><rect x="286" y="274" width="66" height="20" rx="10" fill="#e0e7ff"/>
+  <rect x="198" y="304" width="124" height="22" rx="11" fill="#d1fae5"/>
+  <path d="m214 315 4 4 8-8" fill="none" stroke="#047857" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="234" y="319" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#065f46">Vérifié</text>
+</g>
+
+<!-- noeuds : domaines -->
+<g class="fl"><circle cx="70" cy="68" r="30" fill="#4f46e5"/><g transform="translate(58 56)" class="ic"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6" transform="scale(.9) translate(1 1)"/></g></g>
+<g class="fl3"><circle cx="452" cy="62" r="30" fill="#0e7490"/><g transform="translate(440 50)" class="ic"><path d="M13 2 3 14h9l-1 8 10-12h-9z" transform="scale(.95)"/></g></g>
+<g class="fl2"><circle cx="62" cy="366" r="30" fill="#047857"/><g transform="translate(50 354)" class="ic"><path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.5a1 1 0 0 0 .9 1.5h12.8a1 1 0 0 0 .9-1.5L14.200 10.400A2 2 0 0 1 14 9.500V2M8.500 2h7M7 16h10" transform="scale(.95)"/></g></g>
+<g class="fl"><circle cx="458" cy="356" r="30" fill="#b45309"/><g transform="translate(446 344)" class="ic"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2ZM17 18h1M12 18h1M7 18h1" transform="scale(.95)"/></g></g>
+<g class="fl3"><circle cx="260" cy="404" r="26" fill="#6d28d9"/><g transform="translate(248 392)" class="ic"><path d="M5 12.600a11 11 0 0 1 14.100 0M1.400 9a16 16 0 0 1 21.200 0M8.500 16.100a6 6 0 0 1 7 0M12 20h.01" transform="scale(.95)"/></g></g>
+<circle cx="408" cy="212" r="7" fill="#22d3ee"/><circle cx="104" cy="222" r="5" fill="#a5b4fc"/><circle cx="430" cy="150" r="4" fill="#a5b4fc"/>
+</svg>

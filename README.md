@@ -56,13 +56,29 @@ Le mot de passe est haché avec bcrypt ; la session expire après 2 h.
 | `/entreprises` | Entreprises tunisiennes filtrables par secteur, lien « Site officiel » |
 | `/inscription` | Formulaire (validation client + serveur, photo, diplôme privé, consentement) |
 | `/gestion-admin` → `/tableau` | Connexion puis validation : Approuver / Refuser / Supprimer, consultation du justificatif |
-| `/contact` `/a-propos` `/mentions-legales` `/confidentialite` | Pied de page |
+| `/contact` | Formulaire de contact (messages visibles dans l'admin) |
+| `/a-propos` `/mentions-legales` `/confidentialite` | Pied de page |
 
 ## Données et images
 
 - **49 entreprises** réelles (9 secteurs : Télécoms, Informatique, Industrie, Énergie, Automobile, Aéronautique, Transport, BTP, Chimie) et **57 profils d'ingénieurs fictifs** de démonstration (`SEED_DEMO=0` pour ne pas les créer). Les données sont dans `backend/seed-data.js` ; elles sont ajoutées sans doublons au démarrage.
 - **Logos** : `backend/public/logos/<nom>.svg` — monogrammes originaux générés par `node backend/scripts/generate-assets.js`. Ce ne sont pas les logos officiels : pour utiliser un vrai logo, déposez un fichier du même nom (ex. `vermeg.png`) dans ce dossier ; le serveur préfère automatiquement `png`, `webp` ou `jpg` au `svg`.
 - **Photos de démonstration** : `backend/public/avatars/` (illustrations originales). Les photos téléversées par les vrais inscrits sont stockées à part dans `backend/uploads/photos/`.
+
+## Interface enrichie (accueil et pages)
+
+- **Accueil** : recherche rapide dans le bandeau, chiffres clés animés, défilement de logos d'entreprises, tuiles par domaine (avec nombre de profils, liées à l'annuaire filtré), étapes, atouts, **vidéo de présentation**, derniers profils, bandeau entreprises, FAQ, appel à l'action.
+- **Annuaire** : bandeau, filtres conservés dans l'URL (lien partageable, retour depuis une fiche), tri (récents / nom / expérience), bouton « Réinitialiser », squelettes de chargement.
+- **Entreprises** : recherche instantanée + filtre par secteur. **Inscription** : colonne d'arguments, aperçu de la photo choisie. **À propos** : objectifs et parcours d'un profil. **Contact** : formulaire réel (validation, champ anti-robot, 5 messages/heure/adresse).
+- **Admin** : indicateurs, onglet **Messages** (répondre, marquer comme lu, supprimer), notifications de confirmation.
+- Notifications (toasts), bouton « retour en haut », animations discrètes désactivées si le système demande de réduire les animations.
+
+## Images et vidéo
+
+Les médias sont dans `frontend/public/media/` :
+- `hero.svg`, `companies.svg`, `register.svg`, `not-found.svg`, `pattern.svg` : illustrations originales.
+- `promo.mp4` / `promo.webm` (17 s, sans son) + `promo-poster.jpg` : vidéo de présentation originale, réalisée à partir d'une animation aux couleurs du site.
+- Pour utiliser **votre propre vidéo**, remplacez `promo.mp4` (et `promo.webm`, ou supprimez la ligne `<source ... webm>` de `home.component.ts`) en gardant les mêmes noms, puis relancez `npm run build`.
 
 ## Sécurité et données (conformément à l'Objectif 2)
 
