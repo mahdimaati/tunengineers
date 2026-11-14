@@ -38,6 +38,12 @@ npm run dev:api         # API sur :3000
 npm run dev:web         # Angular sur :4200 (proxy /api et /uploads vers :3000)
 ```
 
+### Windows : lancement en double-clic
+
+- `lancer.bat` : première fois, installe et compile tout seul ; ensuite, démarre simplement le site et ouvre le navigateur.
+- `mettre-a-jour-et-lancer.bat` : à utiliser après une modification du code du dossier `frontend` (recompile puis lance).
+- Alternative : ouvrir le dossier `tunengineers` dans VS Code (File → Open Folder) ; le terminal s'ouvre déjà dans le bon dossier, il suffit de taper `npm start`.
+
 ## Espace administrateur
 
 URL non listée dans le menu public : **/gestion-admin**
