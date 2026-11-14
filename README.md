@@ -106,6 +106,11 @@ backend/   server.js (API) · db.js (schéma + données de départ)
 frontend/  src/app/{core,shared,pages}  src/styles.css (charte)
 ```
 
+## Suivi du projet
+
+- `TESTS.md` : checklist de tests multi-navigateurs.
+- `TACHES.md` : répartition des tâches (à recopier dans Trello / Notion / GitHub Projects).
+
 ## Logo et passe de design 2
 
 - Le logo officiel du groupe (`frontend/public/media/logo.png`, favicon, apple-touch-icon) remplace l'ancien logo dans l'en-tête, le pied de page, la connexion admin et la vidéo de présentation.
