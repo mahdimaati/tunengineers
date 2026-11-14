@@ -1,64 +1,34 @@
-// Données de départ. Les ingénieurs sont FICTIFS (démonstration) ; les entreprises sont réelles
+// Données de départ. Les ingénieurs sont FICTIFS (démonstration) ; les entreprises sont réelles et tunisiennes
 // (les villes sont indicatives : vérifiez-les avant la soutenance).
 
 /** [nom, secteur, ville, site officiel] */
 const COMPANIES = [
   // Télécoms
   ['Tunisie Telecom', 'Télécoms', 'Tunis', 'https://www.tunisietelecom.tn'],
-  ['Ooredoo Tunisie', 'Télécoms', 'Tunis', 'https://www.ooredoo.tn'],
-  ['Orange Tunisie', 'Télécoms', 'Tunis', 'https://www.orange.tn'],
-  ['Huawei Tunisie', 'Télécoms', 'Tunis', 'https://www.huawei.com'],
-  ['Ericsson Tunisie', 'Télécoms', 'Tunis', 'https://www.ericsson.com'],
-  ['Nokia Tunisie', 'Télécoms', 'Tunis', 'https://www.nokia.com'],
   // Informatique
   ['Vermeg', 'Informatique', 'Tunis', 'https://www.vermeg.com'],
-  ['Sofrecom Tunisie', 'Informatique', 'Tunis', 'https://www.sofrecom.com'],
   ['Telnet Holding', 'Informatique', 'Ariana', 'https://www.telnet.com.tn'],
   ['Focus Corporation', 'Informatique', 'Tunis', 'https://www.focus.com.tn'],
   ['Proxym Group', 'Informatique', 'Sousse', 'https://www.proxym-group.com'],
-  ['Capgemini Tunisie', 'Informatique', 'Tunis', 'https://www.capgemini.com'],
-  ['Talan Tunisie', 'Informatique', 'Tunis', 'https://www.talan.com'],
-  ['Linedata Services', 'Informatique', 'Tunis', 'https://www.linedata.com'],
-  ['Sopra Steria Tunisie', 'Informatique', 'Tunis', 'https://www.soprasteria.com'],
   ['InstaDeep', 'Informatique', 'Tunis', 'https://www.instadeep.com'],
   ['Expensya', 'Informatique', 'Tunis', 'https://www.expensya.com'],
-  ['Ubisoft Tunisie', 'Informatique', 'Tunis', 'https://www.ubisoft.com'],
-  ['Microsoft Tunisie', 'Informatique', 'Tunis', 'https://www.microsoft.com'],
   // Industrie
   ['Sartex', 'Industrie', 'Sfax', 'https://www.sartex.com.tn'],
   ['Poulina Group Holding', 'Industrie', 'Ben Arous', 'https://www.poulinagh.com'],
   ['Délice Danone', 'Industrie', 'Ben Arous', 'https://www.delice.tn'],
-  ['Schneider Electric Tunisie', 'Industrie', 'Tunis', 'https://www.se.com'],
-  ['Siemens Tunisie', 'Industrie', 'Tunis', 'https://www.siemens.com'],
-  ['ABB Tunisie', 'Industrie', 'Tunis', 'https://www.abb.com'],
   ['Carthage Cement', 'Industrie', 'Tunis', 'https://www.carthagecement.com.tn'],
   // Énergie
   ['STEG', 'Énergie', 'Tunis', 'https://www.steg.com.tn'],
   ['ETAP', 'Énergie', 'Tunis', 'https://www.etap.com.tn'],
   ['Star Oil Tunisie', 'Énergie', 'Tunis', 'https://www.staroil.com.tn'],
   ['Agil Energy', 'Énergie', 'Tunis', 'https://www.agil.com.tn'],
-  ['TotalEnergies Tunisie', 'Énergie', 'Tunis', 'https://totalenergies.com'],
-  ['Eni Tunisie', 'Énergie', 'Tunis', 'https://www.eni.com'],
   // Automobile
-  ['Leoni Tunisie', 'Automobile', 'Sousse', 'https://www.leoni.com'],
-  ['Yazaki Tunisie', 'Automobile', 'Bizerte', 'https://www.yazaki-europe.com'],
-  ['Stellantis Tunisie', 'Automobile', 'Ben Arous', 'https://www.stellantis.com'],
-  ['Lear Corporation Tunisie', 'Automobile', 'Bizerte', 'https://www.lear.com'],
-  ['Valeo Tunisie', 'Automobile', 'Tunis', 'https://www.valeo.com'],
-  ['Dräxlmaier Tunisie', 'Automobile', 'Tunis', 'https://www.draexlmaier.com'],
-  ['Aptiv Tunisie', 'Automobile', 'Tunis', 'https://www.aptiv.com'],
   // Aéronautique & transport
-  ['Airbus Tunisie', 'Aéronautique', 'Tunis', 'https://www.airbus.com'],
-  ['Safran Tunisie', 'Aéronautique', 'Tunis', 'https://www.safran-group.com'],
   ['Tunisair', 'Transport', 'Tunis', 'https://www.tunisair.com'],
   ['SNCFT', 'Transport', 'Tunis', 'https://www.sncft.com.tn'],
   // BTP
-  ['Bouygues Construction', 'BTP', 'Tunis', 'https://www.bouygues-construction.com'],
-  ['Eiffage', 'BTP', 'Tunis', 'https://www.eiffage.com'],
-  ['Vinci Construction', 'BTP', 'Tunis', 'https://www.vinci-construction.com'],
   // Chimie & pharma
   ['Groupe Chimique Tunisien', 'Chimie', 'Gabès', 'https://www.gct.com.tn'],
-  ['Saint-Gobain Tunisie', 'Chimie', 'Tunis', 'https://www.saint-gobain.com'],
   ['Medis', 'Chimie', 'Tunis', 'https://www.medis.com.tn'],
 ];
 

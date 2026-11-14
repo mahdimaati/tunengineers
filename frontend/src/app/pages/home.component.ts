@@ -52,7 +52,7 @@ import { CountUpDirective, RevealDirective } from '../shared/motion.directives';
       <!-- ===== Entreprises (défilement de logos) ===== -->
       @if (logos().length) {
         <section class="section" aria-labelledby="partners" appReveal>
-          <p id="partners" class="eyebrow">Des entreprises tunisiennes et internationales qui recrutent des ingénieurs</p>
+          <p id="partners" class="eyebrow">Des entreprises tunisiennes qui recrutent des ingénieurs</p>
           <div class="marquee">
             <ul class="marquee-track">
               @for (c of logos(); track c.id) { <li><img [src]="c.logo" [alt]="c.nom" width="56" height="56" loading="lazy" /></li> }

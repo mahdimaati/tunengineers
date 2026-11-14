@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 `);
 
 // ---- Données de départ (exécutées une seule fois par version, sans doublons) ----
-const SEED_VERSION = '2';
+const SEED_VERSION = '3';
 const done = db.prepare("SELECT value FROM meta WHERE key = 'seed_version'").get();
 
 if (!done || done.value !== SEED_VERSION) {
@@ -66,6 +66,10 @@ if (!done || done.value !== SEED_VERSION) {
     const hasCo = db.prepare('SELECT 1 FROM companies WHERE nom = ?');
     const insCo = db.prepare('INSERT INTO companies (nom, secteur, ville, site_web) VALUES (?,?,?,?)');
     for (const c of COMPANIES) if (!hasCo.get(c[0])) insCo.run(...c);
+    // Version 3 : retrait des entreprises étrangères ajoutées par les anciennes versions
+    const retirees = ["Ooredoo Tunisie", "Orange Tunisie", "Huawei Tunisie", "Ericsson Tunisie", "Nokia Tunisie", "Sofrecom Tunisie", "Capgemini Tunisie", "Talan Tunisie", "Linedata Services", "Sopra Steria Tunisie", "Ubisoft Tunisie", "Microsoft Tunisie", "Schneider Electric Tunisie", "Siemens Tunisie", "ABB Tunisie", "TotalEnergies Tunisie", "Eni Tunisie", "Leoni Tunisie", "Yazaki Tunisie", "Stellantis Tunisie", "Lear Corporation Tunisie", "Valeo Tunisie", "Dräxlmaier Tunisie", "Aptiv Tunisie", "Airbus Tunisie", "Safran Tunisie", "Bouygues Construction", "Eiffage", "Vinci Construction", "Saint-Gobain Tunisie"];
+    const delCo = db.prepare('DELETE FROM companies WHERE nom = ?');
+    for (const n of retirees) delCo.run(n);
 
     // Profils de démonstration (fictifs) – désactivables avec SEED_DEMO=0
     if (process.env.SEED_DEMO !== '0') {

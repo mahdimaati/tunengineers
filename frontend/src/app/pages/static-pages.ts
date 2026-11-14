@@ -22,7 +22,12 @@ import { ToastService } from '../shared/toast.component';
       <div class="contact-layout">
         <aside class="contact-info">
           <div class="card info-card"><span class="ico"><app-icon name="mail" [size]="22" /></span><div><b>Email</b><p><a href="mailto:contact&#64;tunengineers.tn">contact&#64;tunengineers.tn</a></p></div></div>
-          <div class="card info-card"><span class="ico"><app-icon name="pin" [size]="22" /></span><div><b>Où ?</b><p>Sup'Com, Tunis (projet pédagogique, Groupe 8)</p></div></div>
+          <div class="card info-card"><span class="ico"><app-icon name="pin" [size]="22" /></span><div><b>Où ?</b><p>Sup'Com — élèves, projet 8</p></div></div>
+          <div class="card map-card">
+            <iframe title="Carte : emplacement de Sup'Com (Cité Technologique des Communications, Ariana)" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=10.1790%2C36.8930%2C10.2010%2C36.9040&amp;layer=mapnik&amp;marker=36.8985%2C10.1900"></iframe>
+            <a class="map-link" href="https://www.openstreetmap.org/?mlat=36.8985&amp;mlon=10.1900#map=16/36.8985/10.1900" target="_blank" rel="noopener noreferrer">Agrandir la carte <app-icon name="arrow-right" [size]="14" /></a>
+          </div>
           <div class="card info-card"><span class="ico"><app-icon name="lock" [size]="22" /></span><div><b>Vos données</b><p>Votre message n'est lu que par l'administrateur. <a routerLink="/confidentialite">Confidentialité</a></p></div></div>
         </aside>
 
