@@ -70,7 +70,7 @@ import { CountUpDirective, RevealDirective } from '../shared/motion.directives';
         </div>
         <div class="domain-grid">
           @for (d of domaines; track d; let i = $index) {
-            <a class="domain" [routerLink]="['/ingenieurs']" [queryParams]="{ domaine: d }" [appReveal]="i * 50">
+            <a class="domain" [routerLink]="['/ingenieurs']" [queryParams]="{ domaine: d }" [style.--c]="color(d)" [appReveal]="i * 50">
               <span class="ico"><app-icon [name]="d" [size]="24" /></span>
               <b>{{ d }}</b>
               <span class="n">{{ counts()[d] ?? 0 }} profil{{ (counts()[d] ?? 0) > 1 ? 's' : '' }}</span>
@@ -134,17 +134,33 @@ import { CountUpDirective, RevealDirective } from '../shared/motion.directives';
         }
       </section>
 
-      <!-- ===== Bandeau entreprises ===== -->
-      <section class="cta-band" aria-labelledby="cta-co" appReveal>
-        <div>
-          <h2 id="cta-co">Vous recrutez des ingénieurs ?</h2>
-          <p>Parcourez l'annuaire, ouvrez une fiche et cliquez sur « Contacter » : les coordonnées s'affichent immédiatement. Découvrez aussi les entreprises déjà référencées.</p>
-          <div class="actions">
-            <a class="btn btn-cyan" routerLink="/ingenieurs">Parcourir l'annuaire</a>
-            <a class="btn btn-ghost" routerLink="/entreprises">Voir les entreprises</a>
-          </div>
+      <!-- ===== Deux parcours ===== -->
+      <section class="section" aria-labelledby="paths">
+        <div class="section-head" appReveal><h2 id="paths">Un site, deux parcours</h2></div>
+        <div class="paths">
+          <article class="path card" appReveal>
+            <img class="path-img" src="media/register.svg" alt="" width="400" height="300" loading="lazy" />
+            <span class="ico"><app-icon name="user-plus" [size]="24" /></span>
+            <h3>Vous êtes ingénieur</h3>
+            <ul class="ticks">
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Un profil public avec le badge « Vérifié »</li>
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Vos coordonnées masquées jusqu'au clic</li>
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Suppression de votre profil sur simple demande</li>
+            </ul>
+            <a class="btn" routerLink="/inscription">Créer mon profil <app-icon name="arrow-right" [size]="16" /></a>
+          </article>
+          <article class="path card path-co" [appReveal]="100">
+            <img class="path-img" src="media/companies.svg" alt="" width="480" height="320" loading="lazy" />
+            <span class="ico"><app-icon name="building" [size]="24" /></span>
+            <h3>Vous recrutez des ingénieurs</h3>
+            <ul class="ticks">
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Recherche par domaine, ville et compétence</li>
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Profils dont le diplôme est contrôlé</li>
+              <li><app-icon name="check" [size]="16" [stroke]="3" /> Contact direct en un clic</li>
+            </ul>
+            <div class="actions"><a class="btn" routerLink="/ingenieurs">Parcourir l'annuaire</a><a class="btn btn-secondary" routerLink="/entreprises">Voir les entreprises</a></div>
+          </article>
         </div>
-        <img src="media/companies.svg" alt="" width="480" height="320" loading="lazy" />
       </section>
 
       <!-- ===== FAQ ===== -->
@@ -172,6 +188,9 @@ import { CountUpDirective, RevealDirective } from '../shared/motion.directives';
 export class HomeComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
+
+  private colors: Record<string, string> = { 'Informatique': '#4f46e5', 'Génie civil': '#b45309', 'Électrique': '#ca8a04', 'Télécoms': '#7c3aed', 'Industriel': '#0e7490', 'Énergie': '#16a34a', 'Chimie': '#be123c', 'Mécanique': '#475569' };
+  color(d: string) { return this.colors[d] ?? '#4f46e5'; }
 
   domaines = ['Informatique', 'Génie civil', 'Électrique', 'Télécoms', 'Industriel', 'Énergie', 'Chimie', 'Mécanique'];
   stats = signal<Stats | null>(null);

@@ -15,7 +15,7 @@ type Statut = 'en_attente' | 'approuve' | 'refuse';
     <div class="admin-shell">
       <div class="admin-bar">
         <div class="container">
-          <span class="brand"><app-logo /> Administration - TunEngineers</span>
+          <span class="brand"><app-logo [size]="30" [badge]="true" /> Administration - TunEngineers</span>
           <button type="button" (click)="logout()">Déconnexion</button>
         </div>
       </div>

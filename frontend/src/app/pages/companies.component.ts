@@ -43,7 +43,7 @@ import { RevealDirective } from '../shared/motion.directives';
       } @else {
         <div class="grid three">
           @for (c of shown(); track c.id; let i = $index) {
-            <article class="card co-card" [appReveal]="(i % 3) * 60">
+            <article class="card co-card" [style.--c]="color(c.secteur)" [appReveal]="(i % 3) * 60">
               <div class="co-top">
                 <span class="co-logo" aria-hidden="true">
                   @if (c.logo) { <img [src]="c.logo" alt="" width="48" height="48" loading="lazy" /> } @else { <span class="co-mono">{{ c.nom.charAt(0) }}</span> }
@@ -78,6 +78,9 @@ export class CompaniesComponent implements OnInit {
     this.api.secteurs().subscribe({ next: (s) => this.secteurs.set(s) });
     this.load();
   }
+
+  private colors: Record<string, string> = { 'Télécoms': '#7c3aed', 'Informatique': '#4f46e5', 'Industrie': '#0e7490', 'Énergie': '#16a34a', 'Automobile': '#be123c', 'Aéronautique': '#0284c7', 'Transport': '#ca8a04', 'BTP': '#b45309', 'Chimie': '#db2777' };
+  color(s: string) { return this.colors[s] ?? '#4f46e5'; }
 
   select(s: string) { this.secteur.set(s); this.load(); }
 

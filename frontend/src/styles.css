@@ -483,3 +483,102 @@ ol.steps { list-style: none; margin: 0; padding: 0; }
 .side-steps li { display: list-item; margin: 4px 0; }
 .hero-search { grid-template-columns: 1.3fr 1.2fr auto; max-width: 700px; }
 @media (max-width: 600px) { .hero-search { grid-template-columns: 1fr; } }
+
+/* ======================================================================
+   Passe de design 2 : logo, cartes, boutons, hero, parcours, connexion admin
+   ====================================================================== */
+:root { --grad: linear-gradient(135deg, #4f46e5, #6366f1); }
+
+/* ----- Boutons ----- */
+.btn { transition: filter .15s, transform .15s, box-shadow .15s, background .15s; }
+.btn:not(.btn-secondary):not(.btn-ghost):not(.btn-cyan):not(.btn-green):not(.btn-grey):not(.btn-danger) { background: var(--grad); box-shadow: 0 6px 16px rgba(79, 70, 229, .28); }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-cyan { box-shadow: 0 6px 18px rgba(34, 211, 238, .35); }
+.btn-secondary:hover { background: #eef2ff; }
+.btn-ghost:hover { background: rgba(255, 255, 255, .12); }
+
+/* ----- En-tête ----- */
+.brand { letter-spacing: -.01em; }
+.site-header .container { min-height: 70px; }
+.nav a { position: relative; }
+.nav a.active:not(.cta)::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 6px; height: 2px; border-radius: 2px; background: var(--indigo); }
+.nav a.cta { background: var(--grad); box-shadow: 0 6px 16px rgba(79, 70, 229, .28); }
+@media (max-width: 800px) { .nav a.active:not(.cta)::after { display: none; } .nav { top: 70px; } }
+
+/* ----- Hero animé ----- */
+.hero { background: url('/media/pattern.svg'), linear-gradient(135deg, #0b1437 0%, #1e1b8a 55%, #4338ca 100%); }
+.hero::after { animation: drift 18s ease-in-out infinite alternate; }
+.hero::before { content: ''; position: absolute; left: -140px; bottom: -200px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(34, 211, 238, .22), transparent 70%); animation: drift 22s ease-in-out infinite alternate-reverse; }
+@keyframes drift { to { transform: translate(-40px, 30px) scale(1.08); } }
+
+/* ----- Titres de section ----- */
+.section-head h2 { position: relative; padding-bottom: 10px; }
+.section-head h2::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--indigo), var(--cyan)); }
+
+/* ----- Cartes ingénieurs ----- */
+.card { transition: box-shadow .2s, transform .2s, border-color .2s; }
+.eng-card { overflow: hidden; padding: 24px 14px 16px; gap: 3px; }
+.eng-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 58px; background: linear-gradient(135deg, #e0e7ff, #cffafe); }
+.eng-card > * { position: relative; }
+.eng-card .badge-ok { position: absolute; z-index: 1; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .1); }
+.eng-card .avatar { border: 3px solid #fff; box-shadow: 0 6px 14px rgba(15, 23, 42, .16); margin-top: 8px; }
+.eng-card .name { margin-top: 10px; }
+.eng-card .sub { display: inline-flex; align-items: center; gap: 3px; }
+.eng-card .exp { margin-top: 2px; font-size: 11px; color: var(--muted); }
+.mini-skills { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-top: 8px; }
+.mini-skills span { font-size: 10.5px; padding: 1px 8px; border-radius: 99px; background: #f1f5f9; color: #334155; border: 1px solid var(--line); }
+.eng-card .more { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 12px; font-weight: 500; color: var(--indigo); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; }
+.eng-card:hover .more, .eng-card:focus-visible .more { opacity: 1; transform: none; }
+@media (hover: none) { .eng-card .more { opacity: 1; transform: none; } }
+.sk-card { height: 230px; }
+
+/* ----- Tuiles de domaines colorées ----- */
+.domain { border-top: 3px solid var(--c, var(--indigo)); }
+.domain:hover { border-color: var(--c, var(--indigo)); }
+.domain .ico { background: color-mix(in srgb, var(--c, #4f46e5) 12%, #fff); color: var(--c, var(--indigo)); }
+.domain:hover .ico { background: var(--c, var(--indigo)); color: #fff; }
+
+/* ----- Cartes entreprises ----- */
+.co-card { border-top: 3px solid var(--c, var(--indigo)); }
+.co-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15, 23, 42, .12); }
+.co-card .tag { background: color-mix(in srgb, var(--c, #4f46e5) 12%, #fff); color: var(--c, #3730a3); }
+.co-logo { width: 56px; height: 56px; border-radius: 14px; background: #fff; box-shadow: var(--shadow); }
+
+/* ----- Deux parcours ----- */
+.paths { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.path { padding: 22px; display: grid; gap: 12px; align-content: start; }
+.path h3 { font-size: 20px; }
+.path-img { width: 100%; height: 150px; object-fit: cover; object-position: center 65%; border-radius: 10px; }
+.path-co { background: linear-gradient(160deg, #fff 55%, #eef2ff); }
+.ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; color: #334155; }
+.ticks li { display: flex; gap: 8px; align-items: flex-start; }
+.ticks app-icon { color: var(--green); margin-top: 3px; }
+.path > .btn { justify-self: start; }
+.path .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 1024px) { .paths { grid-template-columns: 1fr; } }
+
+/* ----- Progression du formulaire d'inscription ----- */
+.progress-wrap { margin: 14px 0 2px; display: grid; gap: 4px; }
+.progress { height: 8px; border-radius: 99px; background: #e2e8f0; overflow: hidden; }
+.progress span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--indigo), var(--cyan)); transition: width .3s ease; }
+
+/* ----- Connexion admin en deux volets ----- */
+.login-split { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+.login-brand { color: #fff; background: url('/media/pattern.svg'), linear-gradient(160deg, #0b1437, #1e1b8a 60%, #4338ca); display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 48px; }
+.login-brand h2 { color: #fff; font-size: 30px; }
+.login-brand p { color: #cbd5ff; max-width: 380px; }
+.login-brand ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; color: #e0e7ff; font-size: 14px; }
+.login-brand li { display: flex; gap: 10px; align-items: center; }
+.login-brand li app-icon { color: var(--cyan); }
+.login-brand .back { margin-top: 18px; color: #cbd5ff; font-size: 14px; }
+.login-split .login-wrap { min-height: 0; padding: 24px; }
+@media (max-width: 800px) {
+  .login-split { grid-template-columns: 1fr; }
+  .login-brand { padding: 28px 20px; }
+  .login-brand p, .login-brand ul { display: none; }
+}
+
+/* ----- Transition entre pages ----- */
+main > * { animation: pagein .38s ease both; }
+@keyframes pagein { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { main > *, .hero::before, .hero::after { animation: none; } }

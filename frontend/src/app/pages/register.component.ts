@@ -37,6 +37,10 @@ const MAX = 5 * 1024 * 1024;
         <section class="card form-card" aria-labelledby="titre">
           <h2 id="titre">Vos informations</h2>
           <p class="note" style="font-size:14px;margin-top:4px">Un administrateur vérifie chaque profil avant publication.</p>
+          <div class="progress-wrap">
+            <div class="progress" role="progressbar" aria-label="Profil complété" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progress()"><span [style.width.%]="progress()"></span></div>
+            <span class="note">Profil complété à {{ progress() }} %</span>
+          </div>
 
           <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
             <div class="form-grid">
@@ -177,6 +181,13 @@ export class RegisterComponent implements OnInit {
     telephone: ['', Validators.pattern(/^$|^\+?[0-9 ]{8,16}$/)],
     consentement: [false, Validators.requiredTrue],
   });
+
+  /** Pourcentage de champs obligatoires remplis (nom, email, domaine, ville, expérience, compétences, diplôme, consentement). */
+  progress(): number {
+    const c = this.form.controls;
+    const ok = [c.nom, c.email, c.domaine, c.ville, c.experience, c.competences, c.consentement].filter((x) => x.valid).length + (this.diplome() ? 1 : 0);
+    return Math.round((ok / 8) * 100);
+  }
 
   ngOnInit() {
     this.api.meta().subscribe((m) => { this.domaines.set(m.domaines); this.experiences.set(m.experiences); });

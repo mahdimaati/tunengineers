@@ -14,7 +14,7 @@ import { ToastsComponent } from './shared/toast.component';
     @if (!isAdmin()) {
       <header class="site-header" [class.scrolled]="scrolled()">
         <div class="container">
-          <a class="brand" routerLink="/" aria-label="TunEngineers – accueil" (click)="menu.set(false)"><app-logo /> TunEngineers</a>
+          <a class="brand" routerLink="/" aria-label="TunEngineers – accueil" (click)="menu.set(false)"><app-logo [size]="42" /> TunEngineers</a>
           <button type="button" class="burger" [attr.aria-expanded]="menu()" aria-controls="nav-principal" aria-label="Menu" (click)="menu.set(!menu())">
             <app-icon [name]="menu() ? 'x' : 'burger'" [size]="22" />
           </button>
@@ -36,7 +36,7 @@ import { ToastsComponent } from './shared/toast.component';
       <footer class="site-footer">
         <div class="container footer-grid">
           <div>
-            <a class="brand" routerLink="/" style="color:#fff"><app-logo /> TunEngineers</a>
+            <a class="brand" routerLink="/" style="color:#fff"><app-logo [size]="40" [badge]="true" /> TunEngineers</a>
             <p class="foot-text">L'annuaire des ingénieurs vérifiés de Tunisie. Projet Web — Sup'Com, Groupe 8.</p>
           </div>
           <nav aria-label="Explorer">

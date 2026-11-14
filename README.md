@@ -105,3 +105,11 @@ Poppins (400/500/700), bleu minuit `#0B1437`, indigo `#4F46E5`, cyan `#22D3EE`, 
 backend/   server.js (API) · db.js (schéma + données de départ)
 frontend/  src/app/{core,shared,pages}  src/styles.css (charte)
 ```
+
+## Logo et passe de design 2
+
+- Le logo officiel du groupe (`frontend/public/media/logo.png`, favicon, apple-touch-icon) remplace l'ancien logo dans l'en-tête, le pied de page, la connexion admin et la vidéo de présentation.
+- Cartes ingénieurs enrichies (bandeau, compétences, expérience, lien « Voir la fiche »), tuiles de domaines et cartes d'entreprises avec couleur d'accent par secteur.
+- Accueil : hero animé avec motif, section « Un site, deux parcours » (ingénieurs / entreprises).
+- Inscription : barre de progression du formulaire. Connexion admin : mise en page en deux volets.
+- Boutons en dégradé, soulignement de la page active, transition douce entre les pages.
